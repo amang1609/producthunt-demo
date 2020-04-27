@@ -11,7 +11,7 @@ def signup(request):
                 user = User.objects.get(username=request.POST['username'])
                 return render(request, 'accounts/signup.html', {'error': 'Username already exists!!'})
             except User.DoesNotExist:
-                user = User.objects.create_user(username=request.POST['password1'])
+                user = User.objects.create_user(username=request.POST['username'], password=request.POST['password1'])
                 auth.login(request, user)
                 return redirect('home')
         else:
@@ -22,10 +22,18 @@ def signup(request):
 
 
 def login(request):
-    return render(request, 'accounts/login.html')
+    if request.method == 'POST':
+        user = auth.authenticate(username=request.POST['username'], password=request.POST['password'])
+        if user is not None and user.is_active:
+            auth.login(request, user)
+            return redirect('home')
+        else:
+            return render(request, 'accounts/login.html', {'error': 'username or password is not correct'})
+    else:
+        return render(request, 'accounts/login.html')
 
 
 def logout(request):
-    # TODO need to route to homepage
-    # and don't forget to logout
-    return render(request, 'accounts/signup.html')
+    if request.method == 'POST':
+        auth.logout(request)
+        return redirect('home')
