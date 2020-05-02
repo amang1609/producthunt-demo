@@ -2,6 +2,26 @@
 
 {% block content %}
 
-<h1>This is Product Hunt Home Product Page</h1>
+<h1>Products</h1>
+    {% for product in products.all %}
+    <div class="row pt-3">
+        <div class="col-2" onclick="window.location='{% url 'detail' product.id %}';" style="cursor: pointer;">
+            <img src="{{ product.icon.url }}" height="250px" class="img-fluid">
+        </div>
+        <div class="col-6" onclick="window.location='{% url 'detail' product.id %}';" style="cursor: pointer;">
+            <h1> {{ product.title }} </h1>
+            <p>{{ product.summary }}</p>
+        </div>
+        <div class="col-4">
+            <h1><a href="javascript:{document.getElementById('upvote{{ product.id }}').submit()}"><button class="btn btn-primary btn-lg btn-block"> <span class="oi oi-caret-top"></span> Upvote {{ product.votes_total }} </button></a></h1>
+
+        </div>
+    </div>
+    <form action="{% url 'upvote' product.id %}" method="POST" id="upvote{{ product.id }}">
+        {% csrf_token %}
+        <input type="hidden">
+    </form>
+
+{% endfor %}
 
 {% endblock %}
